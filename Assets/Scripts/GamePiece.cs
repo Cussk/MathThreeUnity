@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class GamePiece : MonoBehaviour
 {
-    [SerializeField] private int xIndex;
-    [SerializeField] private int yIndex;
+    public MatchValue matchValue;
+
+    public int xIndex;
+    public int yIndex;
+
     [SerializeField] private InterpolationType interpolation = InterpolationType.SmootherStep;
 
     private Board m_board;
@@ -20,6 +23,20 @@ public class GamePiece : MonoBehaviour
         EaseIn,
         SmoothStep,
         SmootherStep
+    }
+
+    public enum MatchValue
+    {
+        Yellow,
+        Blue,
+        Pink,
+        Purple,
+        Green,
+        Teal,
+        Red,
+        Cyan,
+        Wild
+
     }
 
     void Start()
