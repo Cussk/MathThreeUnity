@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [SerializeField] private int xIndex;
-    [SerializeField] private int yIndex;
+    public int xIndex;
+    public int yIndex;
 
     private Board m_board;
 
@@ -19,5 +19,29 @@ public class Tile : MonoBehaviour
         xIndex = xCoordinate;
         yIndex = yCoordinate;
         m_board = board;
+    }
+
+    private void OnMouseDown()
+    {
+        if (m_board != null)
+        {
+            m_board.ClickedTile(this);
+        }
+    }
+
+    private void OnMouseEnter()
+    {
+        if (m_board != null)
+        {
+            m_board.DragTile(this);
+        }
+    }
+
+    private void OnMouseUp()
+    {
+        if (m_board != null)
+        {
+            m_board.ReleaseTile();
+        }
     }
 }
