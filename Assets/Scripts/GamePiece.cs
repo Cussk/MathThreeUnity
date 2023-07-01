@@ -2,22 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile : MonoBehaviour
+public class GamePiece : MonoBehaviour
 {
     [SerializeField] private int xIndex;
     [SerializeField] private int yIndex;
-
-    private Board m_board;
 
     void Start()
     {
         
     }
 
-    public void Initialize(int xCoordinate, int yCoordinate, Board board)
+    void Update()
+    {
+        
+    }
+
+    public void SetCoordinates(int xCoordinate, int yCoordinate)
     {
         xIndex = xCoordinate;
         yIndex = yCoordinate;
-        m_board = board;
     }
 }
