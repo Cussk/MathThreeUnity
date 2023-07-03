@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class Board : MonoBehaviour
@@ -11,9 +9,10 @@ public class Board : MonoBehaviour
    [SerializeField] private int height;
    [SerializeField] private int borderSize;
 
-    [SerializeField] float swapTime = 0.3f;
+   [SerializeField] float swapTime = 0.3f;
 
-   [SerializeField] private GameObject tilePrefab;
+   [SerializeField] private GameObject tileNormalPrefab;
+   [SerializeField] private GameObject tileObstaclePrefab;
    [SerializeField] private GameObject[] gamePiecePrefabs;
 
     //2D arrays
@@ -23,7 +22,18 @@ public class Board : MonoBehaviour
     private Tile m_clickedTile;
     private Tile m_targetTile;
 
-    private bool m_SwitchingEnabled = true;
+    private bool m_switchingEnabled = true;
+
+    public StartingTile[] startingTiles;
+
+    [System.Serializable]
+    public class StartingTile
+    {
+        public GameObject tilePrefab;
+        public int x;
+        public int y;
+        public int z;
+    }
 
     void Start()
     {
@@ -36,25 +46,43 @@ public class Board : MonoBehaviour
         //HighlightMatches();
     }
 
+    private void MakeTile(GameObject prefab, int xCoordinate, int yCoordinate, int zCoordinate = 0)
+    {
+        if (prefab != null)
+        {
+            GameObject tile = Instantiate(prefab, new Vector3(xCoordinate, yCoordinate, zCoordinate), Quaternion.identity);
+
+            tile.name = "Tile (" + xCoordinate + "," + yCoordinate + ")";
+
+            //add tiles to 2D array
+            m_allTiles[xCoordinate, yCoordinate] = tile.GetComponent<Tile>();
+
+            //parent tiles to board, move tiles with board
+            tile.transform.parent = transform;
+
+            //gives Tile object x,y coordinates on the game board
+            m_allTiles[xCoordinate, yCoordinate].Initialize(xCoordinate, yCoordinate, this);
+        }
+    }
+
     void SetUpTiles()
     {
-        for (int i =0; i < width; i++)
+        foreach (StartingTile sTile in startingTiles)
         {
-            for (int j =0; j < height; j++)
+            if (sTile != null)
             {
-               
-                GameObject tile = Instantiate(tilePrefab, new Vector3(i, j, 0), Quaternion.identity);
+                MakeTile(sTile.tilePrefab, sTile.x, sTile.y, sTile.z);
+            }
+        }
 
-                tile.name = "Tile (" + i + "," + j + ")";
-
-                //add tiles to 2D array
-                m_allTiles[i, j] = tile.GetComponent<Tile>();
-                
-                //parent tiles to board, move tiles with board
-                tile.transform.parent = transform;
-
-                //gives Tile object x,y coordinates on the game board
-                m_allTiles[i, j].Initialize(i, j, this);
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (m_allTiles[i, j] == null)
+                {
+                    MakeTile(tileNormalPrefab, i, j);
+                }
             }
         }
     }
@@ -120,7 +148,7 @@ public class Board : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                if (m_allGamePieces[i, j] == null)
+                if (m_allGamePieces[i, j] == null && m_allTiles[i, j].tileType != TileType.Obstacle)
                 {
                     GamePiece piece = FillRandomAt(i, j, falseYOffset, moveTime);
                     iterations = 0;
@@ -220,7 +248,7 @@ public class Board : MonoBehaviour
 
     IEnumerator SwitchTilesRoutine(Tile clickedTile, Tile targetTile)
     {
-        if (m_SwitchingEnabled)
+        if (m_switchingEnabled)
         {
             GamePiece clickedPiece = m_allGamePieces[clickedTile.xIndex, clickedTile.yIndex];
             GamePiece targetPiece = m_allGamePieces[targetTile.xIndex, targetTile.yIndex];
@@ -386,17 +414,23 @@ public class Board : MonoBehaviour
 
     void HighlightTileOff(int xCoordinate, int yCoordinate)
     {
-        SpriteRenderer spriteRenderer = m_allTiles[xCoordinate, yCoordinate].GetComponent<SpriteRenderer>();
+        if (m_allTiles[xCoordinate, yCoordinate].tileType != TileType.Breakable)
+        {
+            SpriteRenderer spriteRenderer = m_allTiles[xCoordinate, yCoordinate].GetComponent<SpriteRenderer>();
 
-        //set alpha to 0
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
+            //set alpha to 0
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
+        }
     }
 
     void HighlightTileOn(int xCoordinate, int yCoordinate, Color color)
     {
-        SpriteRenderer spriteRenderer = m_allTiles[xCoordinate, yCoordinate].GetComponent<SpriteRenderer>();
-        
-        spriteRenderer.color = color;
+        if (m_allTiles[xCoordinate, yCoordinate].tileType != TileType.Breakable)
+        {
+            SpriteRenderer spriteRenderer = m_allTiles[xCoordinate, yCoordinate].GetComponent<SpriteRenderer>();
+
+            spriteRenderer.color = color;
+        }
     }
 
     void HighlightMatches()
@@ -511,6 +545,28 @@ public class Board : MonoBehaviour
         }
     }
 
+    void BreakTileAt(int xCoordinate, int yCoordinate)
+    {
+        //check all tiles for breakable tiles
+        Tile tileToBreak = m_allTiles[xCoordinate,yCoordinate];
+        
+        if (tileToBreak != null)
+        {
+            tileToBreak.BreakTile();
+        }
+    }
+
+    void BreakTileAt(List<GamePiece> gamePieces)
+    {
+        foreach (GamePiece piece in gamePieces)
+        {
+            if (piece != null)
+            {
+                BreakTileAt(piece.xIndex, piece.yIndex);
+            }
+        }
+    }
+
     void ClearBoard()
     {
         for (int i = 0; i < width; i++)
@@ -529,8 +585,8 @@ public class Board : MonoBehaviour
         //loop through pieces in a column
         for (int i = 0; i < height; i++)
         {
-            //if a piece in column is null
-            if (m_allGamePieces[column, i] == null)
+            //if a piece in column is null and not an obstacle tile
+            if (m_allGamePieces[column, i] == null && m_allTiles[column, i].tileType != TileType.Obstacle)
             {
                 //loop through spaces in column starting 1 place above missing piece
                 for (int j = i + 1; j < height; j++)
@@ -598,19 +654,23 @@ public class Board : MonoBehaviour
 
     IEnumerator ClearAndRefillBoardRoutine(List<GamePiece> gamePieces)
     {
-        m_SwitchingEnabled = false;
+        m_switchingEnabled = false;
 
         List<GamePiece> matches = gamePieces;
 
         do
         {
             yield return StartCoroutine(ClearAndCollapseRoutine(matches));
+            yield return null;
 
             yield return StartCoroutine(RefillRoutine());
+            matches = FindAllMatches();
+
+            yield return new WaitForSeconds(0.5f);
         }
         while (matches.Count != 0);
 
-        m_SwitchingEnabled = true;
+        m_switchingEnabled = true;
     }
 
     IEnumerator RefillRoutine()
@@ -635,6 +695,7 @@ public class Board : MonoBehaviour
         while (!isFinished)
         {
             ClearPieceAt(gamePieces);
+            BreakTileAt(gamePieces);
 
             yield return new WaitForSeconds(0.25f);
 
