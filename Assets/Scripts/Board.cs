@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-   [SerializeField] private int width;
-   [SerializeField] private int height;
-   [SerializeField] private int borderSize;
+    [SerializeField] private int width;
+    [SerializeField] private int height;
+    [SerializeField] private int borderSize;
 
-   [SerializeField] float swapTime = 0.3f;
+    [SerializeField] float swapTime = 0.3f;
 
-   [SerializeField] private GameObject tileNormalPrefab;
-   [SerializeField] private GameObject tileObstaclePrefab;
-   [SerializeField] private GameObject[] gamePiecePrefabs;
+    [SerializeField] private GameObject tileNormalPrefab;
+    [SerializeField] private GameObject tileObstaclePrefab;
+    [SerializeField] private GameObject[] gamePiecePrefabs;
 
     //2D arrays
     private Tile[,] m_allTiles;
@@ -22,9 +22,11 @@ public class Board : MonoBehaviour
     private Tile m_clickedTile;
     private Tile m_targetTile;
 
+    private ParticleManager m_particleManager;
+
     private bool m_switchingEnabled = true;
 
-    public StartingTile[] startingTiles;
+    [SerializeField] private StartingTile[] startingTiles;
 
     [System.Serializable]
     public class StartingTile
@@ -43,6 +45,7 @@ public class Board : MonoBehaviour
         SetUpTiles();
         SetupCamera();
         FillBoardRandomPieces(10, 0.5f);
+        m_particleManager = GameObject.FindWithTag("ParticleManager").GetComponent<ParticleManager>();
         //HighlightMatches();
     }
 
@@ -531,7 +534,7 @@ public class Board : MonoBehaviour
             Destroy(pieceToClear.gameObject);
         }
 
-        HighlightTileOff(xCoordinate, yCoordinate);
+        //HighlightTileOff(xCoordinate, yCoordinate);
     }
 
     void ClearPieceAt(List<GamePiece> gamePieces)
@@ -541,6 +544,12 @@ public class Board : MonoBehaviour
             if (piece != null)
             {
                 ClearPieceAt(piece.xIndex, piece.yIndex);
+
+                if (m_particleManager != null)
+                {
+                    //play particle effect on each piece cleared
+                    m_particleManager.ClearPieceFXAt(piece.xIndex, piece.yIndex);
+                }
             }
         }
     }
@@ -550,8 +559,14 @@ public class Board : MonoBehaviour
         //check all tiles for breakable tiles
         Tile tileToBreak = m_allTiles[xCoordinate,yCoordinate];
         
-        if (tileToBreak != null)
+        if (tileToBreak != null && tileToBreak.tileType == TileType.Breakable)
         {
+            if (m_particleManager != null)
+            {
+                //play different particle effect depending on breakableValue level
+                m_particleManager.BreakTileFXAt(tileToBreak.breakableValue, xCoordinate, yCoordinate);
+            }
+
             tileToBreak.BreakTile();
         }
     }
@@ -666,7 +681,7 @@ public class Board : MonoBehaviour
             yield return StartCoroutine(RefillRoutine());
             matches = FindAllMatches();
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.2f);
         }
         while (matches.Count != 0);
 
@@ -685,9 +700,9 @@ public class Board : MonoBehaviour
         List<GamePiece> movingPieces = new List<GamePiece>();
         List<GamePiece> matches = new List<GamePiece>();
 
-        HighlightPieces(gamePieces);
+        //HighlightPieces(gamePieces);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
 
         bool isFinished = false;
 
