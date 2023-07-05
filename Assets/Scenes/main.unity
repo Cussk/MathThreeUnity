@@ -156,8 +156,14 @@ MonoBehaviour:
   height: 9
   borderSize: 2
   swapTime: 0.3
+  fillYOffset: 10
+  fillMoveTime: 0.5
   tileNormalPrefab: {fileID: 8874096207568309513, guid: 5d7395903c75d954392c60b9a799bf1f, type: 3}
   tileObstaclePrefab: {fileID: 460460599414459144, guid: 53daaac4de95a5a4a91c35293f57be0f, type: 3}
+  adjacentBombPrefab: {fileID: 6054899548631503879, guid: 1ccb62552a891b2449a822e95828ee8b, type: 3}
+  columnBombPrefab: {fileID: 764422809826489714, guid: a19faca8a6241af4b8593bea88c72bdd, type: 3}
+  rowBombPrefab: {fileID: 763821101674199736, guid: 57c9e950c1888bf489e899615fc3aaae, type: 3}
+  colorBombPrefab: {fileID: 6734550374116554281, guid: f6b7df2d9f26ea54cbed7e1dff03923c, type: 3}
   gamePiecePrefabs:
   - {fileID: 5128569836485505826, guid: 0ad3f443e1d208043a61c374fa0db9e8, type: 3}
   - {fileID: 4317285083862595392, guid: 3e1e3c8049270b04bbe4382e4a182f9c, type: 3}
@@ -165,18 +171,23 @@ MonoBehaviour:
   - {fileID: 5694952807178316876, guid: 6e9db580089f4ae4d8c92db41a485411, type: 3}
   - {fileID: 5508169157129301989, guid: 3b8c70032f6e485448752150e3c699f3, type: 3}
   startingTiles:
-  - tilePrefab: {fileID: 3144265151772399261, guid: 7fedcca701f57cf4d854e5bd7c6a1fde, type: 3}
+  - prefab: {fileID: 5441690728778137746, guid: 96cadb9c6f9871244be2a039529ad6c8, type: 3}
     x: 5
     y: 4
     z: 1
-  - tilePrefab: {fileID: 3144265151772399261, guid: 7fedcca701f57cf4d854e5bd7c6a1fde, type: 3}
-    x: 6
+  - prefab: {fileID: 3144265151772399261, guid: 7fedcca701f57cf4d854e5bd7c6a1fde, type: 3}
+    x: 5
     y: 5
     z: 1
-  - tilePrefab: {fileID: 5441690728778137746, guid: 96cadb9c6f9871244be2a039529ad6c8, type: 3}
-    x: 3
-    y: 3
-    z: 1
+  startingGamePieces:
+  - prefab: {fileID: 6734550374116554281, guid: f6b7df2d9f26ea54cbed7e1dff03923c, type: 3}
+    x: 1
+    y: 0
+    z: 0
+  - prefab: {fileID: 6734550374116554281, guid: f6b7df2d9f26ea54cbed7e1dff03923c, type: 3}
+    x: 1
+    y: 1
+    z: 0
 --- !u!4 &117170386
 Transform:
   m_ObjectHideFlags: 0
@@ -224,6 +235,7 @@ MonoBehaviour:
   clearFXPrefab: {fileID: 5765483646838856553, guid: 1805e430d5f182b47a2614cb5bcb58e9, type: 3}
   breakFXPrefab: {fileID: 1935087293481954505, guid: 5c9e1a3d04bb9bf429932cad2dce1f1f, type: 3}
   doubleBreakFXPrefab: {fileID: 4774588888654426659, guid: 03ffebb2add5ee7448ef0e7b721bda48, type: 3}
+  bombFXPrefab: {fileID: 5734896197854680668, guid: 8c2bccf278fdec7489afb4d81a95aa88, type: 3}
 --- !u!4 &437557926
 Transform:
   m_ObjectHideFlags: 0

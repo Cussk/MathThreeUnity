@@ -7,6 +7,7 @@ public class ParticleManager : MonoBehaviour
     [SerializeField] private GameObject clearFXPrefab;
     [SerializeField] private GameObject breakFXPrefab;
     [SerializeField] private GameObject doubleBreakFXPrefab;
+    [SerializeField] private GameObject bombFXPrefab;
 
     public void ClearPieceFXAt(int xCoordinate, int yCoordinate, int zCoordinate = 0)
     {
@@ -49,6 +50,18 @@ public class ParticleManager : MonoBehaviour
             {
                 particlePlayer.Play();
             }
+        }
+    }
+
+    public void BombFXAt(int xCoordinate, int yCoordinate, int zCoordinate = 0)
+    {
+        GameObject bombFX = Instantiate(bombFXPrefab, new Vector3(xCoordinate, yCoordinate, zCoordinate), Quaternion.identity);
+
+        ParticlePlayer particlePlayer = bombFX.GetComponent<ParticlePlayer>();
+
+        if (particlePlayer != null)
+        {
+            particlePlayer.Play();
         }
     }
 }

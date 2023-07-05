@@ -3,6 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MatchValue
+{
+    Yellow,
+    Blue,
+    Pink,
+    Purple,
+    Green,
+    Teal,
+    Red,
+    Cyan,
+    Wild
+
+}
+
 public class GamePiece : MonoBehaviour
 {
     public MatchValue matchValue;
@@ -23,20 +37,6 @@ public class GamePiece : MonoBehaviour
         EaseIn,
         SmoothStep,
         SmootherStep
-    }
-
-    public enum MatchValue
-    {
-        Yellow,
-        Blue,
-        Pink,
-        Purple,
-        Green,
-        Teal,
-        Red,
-        Cyan,
-        Wild
-
     }
 
     void Start()
@@ -134,5 +134,27 @@ public class GamePiece : MonoBehaviour
         }
 
         m_isMoving = false;
+    }
+
+    public void ChangeColor(GamePiece pieceToMatch)
+    {
+        SpriteRenderer rendererToChange = GetComponent<SpriteRenderer>();
+
+        Color colorToMatch = Color.clear;
+
+        if (pieceToMatch != null)
+        {
+            SpriteRenderer rendererToMatch = pieceToMatch.GetComponent<SpriteRenderer>();
+
+            if (rendererToMatch != null && rendererToChange != null) 
+            {
+                colorToMatch = rendererToMatch.color;
+            }
+
+            //changes match Value to new color
+            matchValue = pieceToMatch.matchValue;
+        }
+
+        rendererToChange.color = colorToMatch;
     }
 }
