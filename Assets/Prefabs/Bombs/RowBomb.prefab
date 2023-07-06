@@ -102,6 +102,7 @@ MonoBehaviour:
   matchValue: 8
   xIndex: 0
   yIndex: 0
+  scoreValue: 100
   interpolation: 4
   bombType: 2
 --- !u!1 &7616463516033468110

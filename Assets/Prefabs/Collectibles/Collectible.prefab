@@ -100,6 +100,7 @@ MonoBehaviour:
   matchValue: 9
   xIndex: 0
   yIndex: 0
+  scoreValue: 200
   interpolation: 4
   clearedByBomb: 0
   clearedAtBottom: 1

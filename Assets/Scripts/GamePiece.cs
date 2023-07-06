@@ -25,6 +25,8 @@ public class GamePiece : MonoBehaviour
     public int xIndex;
     public int yIndex;
 
+    public int scoreValue = 20;
+
     [SerializeField] private InterpolationType interpolation = InterpolationType.SmootherStep;
 
     private Board m_board;
@@ -157,5 +159,13 @@ public class GamePiece : MonoBehaviour
         }
 
         rendererToChange.color = colorToMatch;
+    }
+
+    public void ScorePoints(int scoreMultiplier = 1, int scoreBonus = 0)
+    {
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.AddScore(scoreValue * scoreMultiplier + scoreBonus);
+        }
     }
 }

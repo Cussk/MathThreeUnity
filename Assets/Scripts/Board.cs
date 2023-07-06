@@ -19,6 +19,9 @@ public class Board : MonoBehaviour
 
     [SerializeField] private GameObject[] gamePiecePrefabs;
 
+    [SerializeField] private StartingObject[] startingTiles;
+    [SerializeField] private StartingObject[] startingGamePieces;
+
     [SerializeField] private GameObject adjacentBombPrefab;
     [SerializeField] private GameObject columnBombPrefab;
     [SerializeField] private GameObject rowBombPrefab;
@@ -46,8 +49,7 @@ public class Board : MonoBehaviour
 
     private bool m_switchingEnabled = true;
 
-    [SerializeField] private StartingObject[] startingTiles;
-    [SerializeField] private StartingObject[] startingGamePieces;
+    private int m_scoreMultiplier = 0;
 
     [System.Serializable]
     public class StartingObject
@@ -706,6 +708,15 @@ public class Board : MonoBehaviour
             {
                 ClearPieceAt(piece.xIndex, piece.yIndex);
 
+                int scoreBonus = 0;
+
+                if (gamePieces.Count >= 4)
+                {
+                    scoreBonus = 20;
+                }
+
+                piece.ScorePoints(m_scoreMultiplier, scoreBonus);
+
                 if (m_particleManager != null)
                 {
                     if (bombedPieces.Contains(piece))
@@ -842,8 +853,12 @@ public class Board : MonoBehaviour
 
         List<GamePiece> matches = gamePieces;
 
+        m_scoreMultiplier = 0;
+
         do
         {
+            m_scoreMultiplier++;
+
             yield return StartCoroutine(ClearAndCollapseRoutine(matches));
             yield return null;
 
@@ -943,6 +958,8 @@ public class Board : MonoBehaviour
             }
             else
             {
+                m_scoreMultiplier++; 
+
                 //recursively start ClearAndCollapseRoutine again on all new matches
                 yield return StartCoroutine(ClearAndCollapseRoutine(matches));
             }
